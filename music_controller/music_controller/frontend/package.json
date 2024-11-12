@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "webpack serve --mode development --open",
     "dev": "webpack --mode development --watch",
     "built": "webpack --mode production"
   },
@@ -16,7 +17,8 @@
     "@babel/preset-react": "^7.25.7",
     "babel-loader": "^9.2.1",
     "webpack": "^5.95.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
   },
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",
