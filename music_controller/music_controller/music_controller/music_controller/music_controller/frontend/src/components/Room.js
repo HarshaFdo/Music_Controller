@@ -13,13 +13,15 @@ class Room extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      voteToSkip: 2,
+      votesToSkip: 2,
       guestCanPause: false,
       isHost: false,
+      showSettings: false,
     };
     this.roomCode = this.props.roomCode;
     this.getRoomDetails()
     this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
+    this.updateShowSettings = this.updateShowSettings.bind(this)
   }
 
   async getRoomDetails() {
@@ -32,7 +34,7 @@ class Room extends Component {
       }
       const data = await response.json();
       this.setState({
-        voteToSkip: data.vote_to_skip ,
+        voteToSkip: data.votes_to_skip ,
         guestCanPause: data.guest_can_pause ,
         isHost: data.is_host,
       });
@@ -59,8 +61,27 @@ class Room extends Component {
     }
   }
 
+  updateShowSettings(value) {
+    this.setState({
+      showSettings: value,
+    });
+  }
+
+  renderSettingsButton() {
+    return (
+      <Grid item xs={12} align="center">
+        <Button 
+          variant="contained"  
+          color="secondary" 
+          onClick={ () => this.updateShowSettings(true)}>
+            Settings
+        </Button>
+      </Grid>
+    );
+  }
+
   render() {
-    const { voteToSkip, guestCanPause, isHost } = this.state;
+    const { votesToSkip, guestCanPause, isHost } = this.state;
     const guestCanPauseStr = guestCanPause ? "true" : "false";
     const isHostStr = isHost ? "true" : "false";
     return (
@@ -72,7 +93,7 @@ class Room extends Component {
         </Grid>
         <Grid item xs={12} align="center">
           <Typography variant="h6" element="h6">
-            Votes: {voteToSkip}
+            Votes: {votesToSkip}
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
@@ -85,6 +106,7 @@ class Room extends Component {
             Host: {isHostStr}
           </Typography>
         </Grid>
+        {this.state.isHost ? this.renderSettingsButton() : null}
         <Grid item xs={12} align="center">
           <Link to="/">
             <Button variant="contained" color="secondary" onClick={this.leaveButtonPressed}>

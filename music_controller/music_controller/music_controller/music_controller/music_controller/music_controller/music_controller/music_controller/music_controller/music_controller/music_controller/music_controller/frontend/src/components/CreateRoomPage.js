@@ -54,7 +54,7 @@ export default class CreateRoomPage extends Component{
             defaultValue={this.defaultVotes}
             inputProps={{
               min: 1,
-              style: {textAlign: "center"}
+              style: {textAlign: "center"},
             }}   
           />
           <FormHelperText>
@@ -63,6 +63,16 @@ export default class CreateRoomPage extends Component{
             </div>
           </FormHelperText>
         </FormControl>
+      </Grid>
+      <Grid item xs={12} align="center">
+        <Button color="secondary" variant="contained">
+          Create A Room
+        </Button>
+      </Grid>
+      <Grid item xs={12} align="center">
+        <Button color="primary" variant="contained" to="/" component={Link}>
+          Back
+        </Button>
       </Grid>
     </Grid>
   );
