@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useParams } from "react-router-dom";
 import RoomJoinPage from "./RoomJoinPage";
 import CreateRoomPage from "./CreateRoomPage";
 import Room from "./Room";
 import { Grid, Button, ButtonGroup, Typography } from "@material-ui/core";
 
 //Wrapper to pass roomCode prop to Room
-/*function RoomWraper() {
+function RoomWraper({ leaveRoomCallback }) {
   const { roomCode } = useParams();
-  return <Room roomCode={roomCode} />
-}*/
+  return <Room roomCode={roomCode} leaveRoomCallback={leaveRoomCallback} />;
+}
 
 export default class HomePage extends Component{
   constructor(props) {
@@ -17,6 +17,7 @@ export default class HomePage extends Component{
     this.state = {
       roomCode: null,
     };
+    this.clearRoomCode = this.clearRoomCode.bind(this)
   }
 
   async componentDidMount() {
@@ -27,6 +28,7 @@ export default class HomePage extends Component{
           roomCode: data.code,
         });
       });
+      
   }
 
   renderHomePage() {
@@ -55,13 +57,19 @@ export default class HomePage extends Component{
     );
   }
 
+  clearRoomCode() {
+    this.setState({
+      roomCode: null,
+    });
+  }
+
   render() {
     return (
       <Router>
         <Routes>
           <Route 
             path="/" 
-            element={
+            element ={
               this.state.roomCode ? (
                 <Navigate to={`/room/${this.state.roomCode}`}/>
               ) : (
@@ -71,7 +79,12 @@ export default class HomePage extends Component{
           />
           <Route path="/join" element = {<RoomJoinPage />} />
           <Route path="/create" element = {<CreateRoomPage />} />
-          <Route path="/room/:roomCode" element={<Room />} />
+          <Route 
+            path="/room/:roomCode" 
+            element={
+            <RoomWraper leaveRoomCallback={this.clearRoomCode} />
+            }
+          />
         </Routes>
       </Router>
     );
