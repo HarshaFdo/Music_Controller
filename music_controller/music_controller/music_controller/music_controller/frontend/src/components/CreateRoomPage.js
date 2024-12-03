@@ -12,13 +12,19 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 
 export default class CreateRoomPage extends Component{
-  defaultVotes = 2;  
+  static defaultProps = {
+    votesToSkip: 2,
+    guestCanPause: true,
+    update: false,
+    roomCode: null,
+    updateCallback: () => {  },
+  }; 
 
   constructor(props) {
     super(props);
     this.state = {
-      guestCanPause: true,
-      voteToSkip: this.defaultVotes,
+      guestCanPause: this.props.guestCanPause,
+      votesToSkip: this.props.votesToSkip,
     };
 
     this.handleRoomButtonPressed = this.handleRoomButtonPressed.bind(this);
@@ -28,7 +34,7 @@ export default class CreateRoomPage extends Component{
 
   handleVotesChange(e) {
     this.setState({
-      voteToSkip: e.target.value,
+      votesToSkip: e.target.value,
     });
   }
 
@@ -43,7 +49,7 @@ export default class CreateRoomPage extends Component{
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
-        vote_to_skip: this.state.voteToSkip,
+        votes_to_skip: this.state.votesToSkip,
         guest_can_pause: this.state.guestCanPause
       }) 
     };
@@ -52,12 +58,49 @@ export default class CreateRoomPage extends Component{
       .then((data) => this.props.history.push("/room/" + data.code));
   }
 
+  renderCreateButtons() {
+    return(
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Button 
+            color="secondary" 
+            variant="contained" 
+            onClick={this.handleRoomButtonPressed}>
+            Create A Room
+          </Button>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Link to="/">
+            <Button variant="contained" color="primary" >
+              Back
+            </Button>
+          </Link>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  renderUpdateButtons() {
+    return (
+      <Grid item xs={12} align="center">
+        <Button 
+          color="secondary" 
+          variant="contained" 
+          onClick={this.handleRoomButtonPressed}>
+          Update Room
+        </Button>
+      </Grid> 
+    );
+  }
+
   render() {
+    const title = this.props.update ? "Update Room" : "Create a Room"
+
     return (
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
           <Typography element="h4" variant="h4">
-            Create A Room
+            {title}
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
@@ -87,7 +130,7 @@ export default class CreateRoomPage extends Component{
               required={true} 
               type="number" 
               onChange={this.handleVotesChange}
-              defaultValue={this.defaultVotes}
+              defaultValue={this.state.votesToSkip}
               inputProps={{
                 min: 1,
                 style: {textAlign: "center"},
@@ -100,18 +143,11 @@ export default class CreateRoomPage extends Component{
             </FormHelperText>
           </FormControl>
         </Grid>
-        <Grid item xs={12} align="center">
-          <Button color="secondary" variant="contained" onClick={this.handleRoomButtonPressed}>
-            Create A Room
-          </Button>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Link to="/">
-            <Button variant="contained" color="primary" >
-              Back
-            </Button>
-          </Link>
-        </Grid>
+        {
+          this.props.update 
+            ? this.renderUpdateButtons() 
+            : this.renderCreateButtons()
+        }
       </Grid>
     );
   }

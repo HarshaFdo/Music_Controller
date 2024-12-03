@@ -9,7 +9,7 @@ import {
   Link, 
   Redirect, 
 } from "react-router-dom";
-import Room from "./Room";
+
 
 export default class HomePage extends Component{
   constructor(props) {

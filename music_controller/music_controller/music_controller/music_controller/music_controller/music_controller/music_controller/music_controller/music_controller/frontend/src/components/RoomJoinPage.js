@@ -9,7 +9,7 @@ export default class RoomJoinPage extends Component{
       roomCode: "",
       error: ""
     };
-    this.handleTextFeildChange = this.handleTextFeildChange.bind(this);
+    this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
     this.roomButtonPressed = this.roomButtonPressed.bind(this);
   }
 
@@ -17,19 +17,19 @@ export default class RoomJoinPage extends Component{
     return (
       <Grid container spacing={1} >
         <Grid item xs={12} align="center">
-          <Typography variant="h4" component="h4">
+          <Typography variant="h4" element="h4">
             Join a Room
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
           <TextField 
-            error="error"
+            error={!!this.state.error}
             label="Code"
             placeholder="Enter a Room Code"
             value={ this.state.roomCode }
             helperText={ this.state.error }
             variant="outlined"
-            onChange={ this.handleTextFeildChange }
+            onChange={ this.handleTextFieldChange }
           />
         </Grid>
         <Grid item xs={12} align="center">
@@ -38,18 +38,20 @@ export default class RoomJoinPage extends Component{
           </Button>
         </Grid>
         <Grid item xs={12} align="center">
-        <Button variant="contained" color="secondary" to="/" component={Link}>
-            Back
-          </Button>
+          <Link to="/">
+            <Button variant="contained" color="secondary" >
+              Back
+            </Button>
+          </Link>
         </Grid>
       </Grid>
     );
   }
 
-  handleTextFeildChange(e) {
+  handleTextFieldChange(e) {
     this.setState({
       roomCode: e.target.value
-    })
+    });
   }
 
   roomButtonPressed() {
@@ -65,12 +67,12 @@ export default class RoomJoinPage extends Component{
         if (response.ok) {
           this.props.history.push(`/room/${this.state.roomCode}`)
         } else {
-          this.setState({error: "Room not found"})
+          this.setState({error: "Room not found"});
         }
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => 
+        console.log(error)
+      );
   }
 }
 
