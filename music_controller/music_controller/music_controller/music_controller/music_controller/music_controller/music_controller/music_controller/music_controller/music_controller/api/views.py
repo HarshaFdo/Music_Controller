@@ -31,7 +31,7 @@ class RoomJoin(APIView):
   lookup_url_kwarg = 'code' 
 
   def post(self, request, format=None):
-    if not self.request.session.exists(self.request.session_key):
+    if not self.request.session.exists(self.request.session.session_key):
       self.request.session.create()
 
     code = request.data.get(self.lookup_url_kwarg) 
@@ -50,7 +50,7 @@ class CreateRoomView(APIView):
   serializer_class = CreateRoomSerializer
 
   def post(self, request, format = None):
-    if not self.request.session.exists(self.request.session_key):
+    if not self.request.session.exists(self.request.session.session_key):
       self.request.session.create()
 
     serializer = self.serializer_class(data = request.data)
