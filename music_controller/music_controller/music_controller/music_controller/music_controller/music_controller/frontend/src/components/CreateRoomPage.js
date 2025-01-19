@@ -25,6 +25,8 @@ export default class CreateRoomPage extends Component{
     this.state = {
       guestCanPause: this.props.guestCanPause,
       votesToSkip: this.props.votesToSkip,
+      errorMsg: "",
+      successMsg: "",
     };
 
     this.handleRoomButtonPressed = this.handleRoomButtonPressed.bind(this);
@@ -56,6 +58,30 @@ export default class CreateRoomPage extends Component{
     fetch('/api/create-room', requestOptions)
       .then((response) => response.json())
       .then((data) => this.props.history.push("/room/" + data.code));
+  }
+
+  handleUpdateButtonPressed () {
+    const requestOptions = {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        votes_to_skip: this.state.votesToSkip,
+        guest_can_pause: this.state.guestCanPause,
+        code: this.props.roomCode,
+      }), 
+    };
+    fetch('/api/create-room', requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          this.setState({
+            successMsg : "Room updated successfully!",
+          });
+        } else {
+          this.setState({
+            errorMsg : "Error updating room...",
+          })
+        }
+      })
   }
 
   renderCreateButtons() {

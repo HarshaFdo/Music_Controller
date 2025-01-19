@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { Grid, Button, Typography } from "@material-ui/core";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
 // Functional wrapper for using hooks with class components
 function RoomWrapper(props) {
   const { roomCode } = useParams(); // Get roomCode from the URL params
-  return <Room {...props} roomCode={roomCode} />;
+  const navigate = useNavigate(); // Get navigate function for programmatic navigation
+  return <Room {...props} roomCode={roomCode} navigate={navigate} />;
 }
 
 class Room extends Component {
@@ -18,26 +19,44 @@ class Room extends Component {
     };
     this.roomCode = this.props.roomCode;
     this.getRoomDetails()
+    this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
   }
 
-  getRoomDetails() {
-    fetch(`/get-room?code=${this.roomCode}`)
-      .then((response) => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        response.json();
-      })
-      .then((data) => {
-        this.setState({
-          voteToSkip: data.vote_to_skip || 2,
-          guestCanPause: data.guest_can_pause !== undefined ? data.guest_can_pause : false,
-          isHost: data.is_host !== undefined ? data.is_host : false ,
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching room details:", error);
+  async getRoomDetails() {
+    try {
+      const response = await fetch(`/api/get-room?code=${this.roomCode}`);
+      if (!response.ok) {
+        this.props.leaveRoomCallback();
+        this.props.navigate("/"); // Use navigate for redirection
+        return;
+      }
+      const data = await response.json();
+      this.setState({
+        voteToSkip: data.vote_to_skip ,
+        guestCanPause: data.guest_can_pause ,
+        isHost: data.is_host,
       });
+    }catch (error) {
+      console.error("Error fetching room details:", error);
+      this.props.leaveRoomCallback();
+      this.props.navigate("/"); // Navigate to home on error
+    }
+  }
+
+  async leaveButtonPressed() {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+    try {
+      const response = await fetch("/api/leave-room", requestOptions);
+      if (response.ok) {
+        this.props.leaveRoomCallback();
+        this.props.navigate("/"); // Use navigate for redirection
+      }
+    } catch (error) {
+      console.error("Error leaving room:", error);
+    }
   }
 
   render() {
@@ -68,7 +87,7 @@ class Room extends Component {
         </Grid>
         <Grid item xs={12} align="center">
           <Link to="/">
-            <Button variant="contained" color="secondary" >
+            <Button variant="contained" color="secondary" onClick={this.leaveButtonPressed}>
               Leave Room
             </Button>
           </Link>
